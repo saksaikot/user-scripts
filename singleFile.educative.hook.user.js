@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         educative hook for singleFile
 // @namespace    https://github.com/saksaikot/userscripts
-// @version      1.0.1
+// @version      1.0.2
 // @description  educative page fix
 // @author       saksaikot
 // @match        *://*/*
@@ -74,24 +74,28 @@ addEventListener("single-file-on-before-capture-request", () => {
             // react code
             setIframe();
           }
-          const Widget__MultiFiles =
-            getClassNameFromSubstring("Widget__MultiFiles");
+          // const Widget__MultiFiles =
+          //   getClassNameFromSubstring("Widget__MultiFiles");
+          if (document.querySelector(`.decorationsOverviewRuler`))
+            fixScrollableElements();
+          // if (
+          //   document.querySelectorAll(
+          //     ".code-container .decorationsOverviewRuler"
+          //   ).length
+          // ) {
+          //   overflowFix();
+          // }
+          const styles__Spa_Container = getClassNameFromSubstring(
+            "styles__Spa_Container"
+          );
+
           if (
             document.querySelector(
-              `.${Widget__MultiFiles} .decorationsOverviewRuler`
-            )
-          )
-            fixMultiFile();
-          if (
-            document.querySelectorAll(
-              ".code-container .decorationsOverviewRuler"
-            ).length
-          ) {
-            overflowFix();
-          }
-          if (
-            document.querySelector(
-              ".styles__Spa_Container-sc-1vx22vv-51 .styles__Buttons_DownloadAndCopyButton-sc-2pjuhh-5"
+              `.${getClassNameFromSubstring(
+                "styles__Spa_Container"
+              )} .${getClassNameFromSubstring(
+                "styles__Buttons_DownloadAndCopyButton"
+              )}`
             )
           )
             downloadCode(document.title);
@@ -99,6 +103,16 @@ addEventListener("single-file-on-before-capture-request", () => {
         if (!scrolledToDown) window.scrollTo(0, now);
       }, 60);
     }
+    if (
+      document.querySelector(
+        ".monaco-scrollable-element.editor-scrollable.vs-dark"
+      )
+    )
+      document
+        .querySelectorAll(
+          ".monaco-scrollable-element.editor-scrollable.vs-dark"
+        )
+        .forEach((e) => (e.style.overflowX = "scroll"));
     function checkIfAllFinished() {
       const check = setInterval(() => {
         // console.log(
@@ -138,19 +152,19 @@ addEventListener("single-file-on-before-capture-request", () => {
       //   .querySelectorAll(".styles__CodeEditorStyled-sc-2pjuhh-0")
       //   .forEach((e, i) => (e.style.height = codeEditorHeight[i] + "px"));
     }
-    function overflowFix() {
-      let codeEditorHeight = [];
-      const styles__CodeEditorStyled = getClassNameFromSubstring(
-        "styles__CodeEditorStyled"
-      );
+    // function overflowFix() {
+    //   let codeEditorHeight = [];
+    //   const styles__CodeEditorStyled = getClassNameFromSubstring(
+    //     "styles__CodeEditorStyled"
+    //   );
 
-      document
-        .querySelectorAll(".code-container .decorationsOverviewRuler")
-        .forEach((e) => codeEditorHeight.push(+e.height + 20));
-      document
-        .querySelectorAll(`.code-container .${styles__CodeEditorStyled}`)
-        .forEach((e, i) => (e.style.height = codeEditorHeight[i] + "px"));
-    }
+    //   document
+    //     .querySelectorAll(".code-container .decorationsOverviewRuler")
+    //     .forEach((e) => codeEditorHeight.push(+e.height + 20));
+    //   document
+    //     .querySelectorAll(`.code-container .${styles__CodeEditorStyled}`)
+    //     .forEach((e, i) => (e.style.height = codeEditorHeight[i] + "px"));
+    // }
 
     function getClassNameFromSubstring(substring) {
       var allClasses = [];
@@ -206,9 +220,10 @@ addEventListener("single-file-on-before-capture-request", () => {
         await sleep(15000);
       });
     }
-    function fixMultiFile() {
+    function fixScrollableElements() {
       let codeViewHeight = [];
       let codeEditorHeight = [];
+
       const Widget__MultiFiles =
         getClassNameFromSubstring("Widget__MultiFiles");
       const styles__CodeEditorStyled = getClassNameFromSubstring(
@@ -218,20 +233,19 @@ addEventListener("single-file-on-before-capture-request", () => {
       const styles__FileTree = getClassNameFromSubstring("styles__FileTree");
 
       document
-        .querySelectorAll(`.${Widget__MultiFiles} .decorationsOverviewRuler`)
+        .querySelectorAll(`.decorationsOverviewRuler`)
         .forEach((e) => codeEditorHeight.push(+e.height + 20));
       document
-        .querySelectorAll(
-          `.${Widget__MultiFiles} .view-lines.monaco-mouse-cursor-text`
-        )
+        .querySelectorAll(`.view-lines.monaco-mouse-cursor-text`)
         .forEach((e) => codeViewHeight.push(+e.style.height.replace("px", "")));
+
       setHeightToElement(`.${Widget__MultiFiles}`);
-      setHeightToElement(`.${Widget__MultiFiles} .${styles__CodeEditorStyled}`);
-      setHeightToElement(`.${Widget__MultiFiles} .${styles__CodeWrap}`);
-      setHeightToElement(`.${Widget__MultiFiles} .monaco-editor`);
-      setHeightToElement(`.${Widget__MultiFiles} .${styles__FileTree}`);
+      setHeightToElement(`.${styles__CodeEditorStyled}`);
+      setHeightToElement(`.${styles__CodeWrap}`);
+      setHeightToElement(`.monaco-editor`);
+      setHeightToElement(`.${styles__FileTree}`);
       setHeightToElement(
-        `.${Widget__MultiFiles} .h-full.w-full.bg-gray-A900.flex.flex-col.h-full.overflow-x-scroll.overflow-y-hidden.block`
+        `.h-full.w-full.bg-gray-A900.flex.flex-col.h-full.overflow-x-scroll.overflow-y-hidden.block`
       );
 
       function setHeightToElement(selector) {
